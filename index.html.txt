@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>椎名ユウセイ / Yusei - 數據驅動影像行銷作品集</title>
+    <!-- 引入 Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com/"></script>
+    <!-- 引入 React & ReactDOM CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- 引入 Babel 用於解析 JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- 引入 Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #060a12; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const Icon = ({ name, className }) => {
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [name]);
+            return <i data-lucide={name} className={className}></i>;
+        };
+
+        const SmartImage = ({ src, alt, className }) => {
+            const [error, setError] = useState(false);
+            const [loading, setLoading] = useState(true);
+            const processedSrc = src ? encodeURI(src) : src;
+
+            if (error || !src) {
+                return (
+                    <div className={`${className} flex flex-col items-center justify-center bg-slate-800 text-slate-600 gap-2 border border-white/5`}>
+                        <Icon name="image" className="w-8 h-8 opacity-20" />
+                        <span className="text-[10px] uppercase tracking-widest opacity-30 font-bold">Content Loading...</span>
+                    </div>
+                );
+            }
+
+            return (
+                <div className={`${className} relative overflow-hidden bg-slate-900 flex items-center justify-center`}>
+                    {loading && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-slate-800 animate-pulse">
+                            <div className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+                        </div>
+                    )}
+                    <img
+                        src={processedSrc}
+                        alt={alt}
+                        className={`${className} object-cover transition-opacity duration-700 ${loading ? 'opacity-0' : 'opacity-100'}`}
+                        onLoad={() => setLoading(false)}
+                        onError={() => {
+                            setError(true);
+                            setLoading(false);
+                        }}
+                    />
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [selectedWork, setSelectedWork] = useState(null);
+
+            const stats = [
+                { label: "單日最高點閱", value: "30,000+", detail: "為平均值 5 倍", icon: "trending-up", iconColor: "text-emerald-400" },
+                { label: "新訂閱增長", value: "600+", detail: "週增長 1.2%", icon: "users", iconColor: "text-blue-400" },
+                { label: "策略精準度", value: "年度第一", detail: "2025 績效總結", icon: "target", iconColor: "text-amber-400" },
+                { label: "數據模型", value: "鐘型分佈", detail: "精準投放策略", icon: "pie-chart", iconColor: "text-purple-400" }
+            ];
+
+            const portfolioItems = [
+                {
+                    id: 'recent',
+                    title: "年度績效第一：策略型短影音",
+                    type: "核心代表作",
+                    url: "https://youtu.be/d-gfyRV5ZPw",
+                    image: "https://img.youtube.com/vi/d-gfyRV5ZPw/maxresdefault.jpg",
+                    description: "透過「標題、封面、發佈時間」三重策略，在發佈首日即達成同頻道當日平均點閱之 5 倍。",
+                    highlights: ["受眾行為分析：鎖定平日晚間 6 點高峰", "社群裂變：當週帶來 600+ 名新訂閱者", "轉換優化：2025 年度點閱率冠軍"]
+                },
+                {
+                    id: 'script',
+                    title: "202 指揮部：指定內部宣傳片",
+                    type: "腳本企劃",
+                    url: "#",
+                    image: "2160.png",
+                    description: "首次執筆軍事單位指定腳本，展現嚴謹的敘事邏輯與鏡頭調度能力。",
+                    highlights: ["結構化敘事：完整鏡頭佈局", "場景調度：精確定義 30+ 鏡號需求", "專業認可：內部宣傳核心腳本"]
+                },
+                {
+                    id: 'concept',
+                    title: "AI 趨勢洞察：梗圖行銷企劃",
+                    type: "內容開發",
+                    url: "https://www.youtube.com/live/-1yQLG3U374",
+                    image: "https://img.youtube.com/vi/-1yQLG3U374/maxresdefault.jpg",
+                    description: "敏銳捕捉網路 AI 梗圖文化，將碎片化資訊轉化為具備高互動性的節目企劃。",
+                    highlights: ["趨勢捕捉：引發社群共鳴", "企劃落地：視覺圖像傳遞媒介", "互動設計：提升直播參與度"]
+                }
+            ];
+
+            return (
+                <div className="min-h-screen pb-10">
+                    <div className="bg-slate-900/80 backdrop-blur-md border-b border-white/5 py-3 px-6 sticky top-0 z-40">
+                        <div className="max-w-6xl mx-auto flex justify-between items-center text-[10px] tracking-[0.2em]">
+                            <div className="flex items-center gap-2">
+                                <Icon name="shield-check" className="w-4 h-4 text-blue-500" />
+                                <span className="text-white font-black uppercase">Identity Authenticated</span>
+                            </div>
+                            <div className="text-slate-500 hidden md:block uppercase font-bold text-center">
+                                署名 Yusei 之影片皆屬本人原創作品
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-6xl mx-auto px-6 py-16">
+                        <div className="mb-24 text-center md:text-left">
+                            <div className="inline-block px-4 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold mb-8">DATA-DRIVEN VIDEO MARKETING</div>
+                            <h1 className="text-5xl md:text-7xl font-black text-white mb-8 tracking-tighter leading-none">影像與數據的<br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-emerald-400 to-indigo-500">策略整合者</span></h1>
+                            <p className="text-xl text-slate-400 max-w-2xl leading-relaxed font-medium">「專注於將長時間直播資產轉化為具行銷價值的精華內容，透過數據模型精準投放。」</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-24">
+                            {stats.map((stat, i) => (
+                                <div key={i} className="bg-slate-900/40 border border-white/5 p-8 rounded-[2rem] hover:border-blue-500/40 transition-all group shadow-2xl">
+                                    <div className="flex justify-between items-start mb-6">
+                                        <div className={`p-3 bg-slate-800 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all ${stat.iconColor}`}>
+                                            <Icon name={stat.icon} className="w-5 h-5" />
+                                        </div>
+                                    </div>
+                                    <div className="text-3xl md:text-4xl font-black text-white mb-1">{stat.value}</div>
+                                    <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">{stat.label}</div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                            {portfolioItems.map((item) => (
+                                <div key={item.id} onClick={() => setSelectedWork(item)} className="group cursor-pointer relative">
+                                    <SmartImage src={item.image} alt={item.title} className="aspect-video rounded-[2.5rem] shadow-2xl border border-white/5" />
+                                    <div className="mt-6 px-2">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded">{item.type}</span>
+                                        </div>
+                                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">{item.title}</h3>
+                                        <p className="text-sm text-slate-500 line-clamp-2">{item.description}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-32 pt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-12">
+                            <div className="flex items-center gap-8 group">
+                                <SmartImage src="3-2.png" alt="Yusei Avatar" className="w-24 h-24 rounded-[2rem] border-2 border-white/10 relative z-10 shadow-2xl" />
+                                <div>
+                                    <div className="font-black text-white text-2xl tracking-tight mb-1 text-center md:text-left">椎名ユウセイ / Yusei</div>
+                                    <div className="text-sm text-blue-500/80 font-bold uppercase tracking-widest">Digital Content Strategist</div>
+                                </div>
+                            </div>
+                            <a 
+                                href="mailto:koujinomusuko@gmail.com" 
+                                className="w-full md:w-auto px-12 py-5 bg-white text-slate-950 rounded-3xl font-black text-lg hover:bg-blue-50 transition-all shadow-xl hover:-translate-y-1 active:translate-y-0 flex items-center justify-center"
+                            >
+                                BUSINESS INQUIRY
+                            </a>
+                        </div>
+                    </div>
+
+                    {selectedWork && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 backdrop-blur-3xl bg-black/80">
+                            <div className="bg-[#0a0f18] border border-white/10 max-w-4xl w-full rounded-[4rem] overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+                                <div className="relative aspect-video w-full flex-shrink-0">
+                                    <SmartImage src={selectedWork.image} alt={selectedWork.title} className="w-full h-full object-cover" />
+                                    <button onClick={() => setSelectedWork(null)} className="absolute top-8 right-8 w-14 h-14 bg-white/10 hover:bg-white/20 text-white rounded-full flex items-center justify-center backdrop-blur-3xl border border-white/10 transition-all z-20">✕</button>
+                                    <div className="absolute bottom-10 left-12 right-12">
+                                        <h2 className="text-4xl font-black text-white tracking-tighter drop-shadow-2xl">{selectedWork.title}</h2>
+                                    </div>
+                                </div>
+                                <div className="p-12 overflow-y-auto custom-scrollbar bg-[#0a0f18]">
+                                    <p className="text-slate-300 text-xl mb-12 leading-relaxed font-medium border-l-4 border-blue-500 pl-8">{selectedWork.description}</p>
+                                    <div className="flex flex-col md:flex-row gap-4">
+                                        <a href={selectedWork.url} target="_blank" className="flex-1 py-6 bg-white text-slate-950 rounded-3xl font-black text-center shadow-2xl hover:bg-blue-50 transition-all">觀看完整內容</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
